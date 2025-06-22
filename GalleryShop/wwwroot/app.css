@@ -158,7 +158,18 @@ h1:focus {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
+.img-frame {
+    position: absolute;
+    top: 20.5%;
+    height: 60%;
+    width: 68%;
+    left: 16%;
+    background-size: cover;
+    background-position: center;
+}
+
 .photo-thumbnails-scroll {
+    margin-top: 20px;
     width: 100%;
     overflow-x: auto;
 }

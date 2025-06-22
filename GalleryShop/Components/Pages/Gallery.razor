@@ -20,7 +20,21 @@ else
         <!-- Left Column: Gallery -->
         <div class="gallery-left">
             <div class="selected-photo">
-                <img src="@photo.Url" alt="@photo.Title" />
+                @if (selectedProductId < 3)
+                {
+                    <div style="position: relative;max-width:350px;">
+                        <div>
+                         <img src="@selectedProduct!.Image" />
+                         </div>
+                         <div class="img-frame" style="background-size: cover;background-position: center;background: url('@photo.Url');">
+                           </div>
+                    </div>
+                }
+                else
+                {
+                     <img src="@photo.Url" alt="@photo.Title" />
+                }
+               
             </div>
             <div class="photo-thumbnails-scroll">
                 <div class="photo-thumbnails">
@@ -62,11 +76,13 @@ else
     private decimal price = 0.0m;
 
     private int selectedProductId = 1;
+    private Product? selectedProduct;
     private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         products = await ProductsService.GetProducts();
+        selectedProduct = products[0];
         album = await AlbumService.GetAlbum(id);
         photo = album?.Photos[0];
         setPrice();
@@ -81,14 +97,15 @@ else
 
     private void setPrice()
     {
-        price = (photo?.Price ?? 0m) +(products.FirstOrDefault(p => p.Id == selectedProductId)?.Price ?? 0.0m);
+        price = (photo?.Price ?? 0m) + (selectedProduct?.Price ?? 0.0m);
     }
 
-     private void OnProductChanged(ChangeEventArgs e)
+    private void OnProductChanged(ChangeEventArgs e)
     {
         if (int.TryParse(e.Value?.ToString(), out var id))
         {
             selectedProductId = id;
+            selectedProduct = products.FirstOrDefault(p => p.Id == selectedProductId);
             setPrice();
         }
     }
