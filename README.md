@@ -1,6 +1,6 @@
 # GalleryShop Solution
 
-This solution contains **three** separate projects, each serving a specific role in the system architecture.
+This solution contains **three** separate projects, each serving a specific role in the system architecture. It is built with **.NET 9**, uses **PostgreSQL** for data storage, and **AWS S3** for image hosting.
 
 ---
 
@@ -8,7 +8,10 @@ This solution contains **three** separate projects, each serving a specific role
 
 A full-featured Blazor Server application deployed as a Docker container on AWS EC2.
 
-🔗 **Demo:** [https://new.coachlink.co.nz](https://new.coachlink.co.nz)
+- 🧠 Built with **.NET 9**
+- 🗄 Uses **PostgreSQL** for structured data
+- ☁️ Uploads and retrieves all images from **AWS S3**
+- 🔗 **Demo:** [https://new.coachlink.co.nz](https://new.coachlink.co.nz)
 
 ### 📸 Screenshots
 
@@ -21,7 +24,10 @@ A full-featured Blazor Server application deployed as a Docker container on AWS 
 
 A RESTful backend API for the GalleryShop ecosystem, deployed as a Docker container on AWS EC2.
 
-> Provides endpoints for managing galleries, products, and user data.
+- 🧠 Built with **.NET 9**
+- 🗄 Connects to **PostgreSQL** for persistent data
+- ☁️ Handles image uploads to and downloads from **AWS S3**
+- 📦 Provides endpoints for managing galleries, products, and user data
 
 ---
 
@@ -29,8 +35,11 @@ A RESTful backend API for the GalleryShop ecosystem, deployed as a Docker contai
 
 A standalone Progressive Web App built with Blazor WebAssembly.
 
+- 🧠 Built with **.NET 9**
 - ✅ Deployed to **AWS S3**
 - 🌍 Served through **AWS CloudFront**
+- ☁️ Displays images fetched from **AWS S3**
+- 🗄 Communicates with the API (which uses **PostgreSQL**)
 
 🔗 **Demo:** [https://d5jc0mvmc13um.cloudfront.net/](https://d5jc0mvmc13um.cloudfront.net/)
 
@@ -43,11 +52,11 @@ A standalone Progressive Web App built with Blazor WebAssembly.
 
 ## 📦 Deployment Summary
 
-| Project                 | Technology      | Hosting                  | Delivery                 |
-|------------------------|-----------------|---------------------------|---------------------------|
-| **GalleryShop**        | Blazor Server   | AWS EC2 + Docker          | Web App                   |
-| **GalleryShop API**    | ASP.NET Core    | AWS EC2 + Docker          | Web API                   |
-| **Blazor WASM (PWA)**  | Blazor WASM PWA | AWS S3 + AWS CloudFront   | Static Web App (PWA)      |
+| Project                 | Technology      | Hosting                  | Delivery                 | Database      | Image Storage |
+|------------------------|-----------------|---------------------------|---------------------------|---------------|----------------|
+| **GalleryShop**        | Blazor Server (.NET 9)   | AWS EC2 + Docker          | Web App                   | PostgreSQL    | AWS S3         |
+| **GalleryShop API**    | ASP.NET Core (.NET 9)    | AWS EC2 + Docker          | Web API                   | PostgreSQL    | AWS S3         |
+| **Blazor WASM (PWA)**  | Blazor WASM (.NET 9)     | AWS S3 + AWS CloudFront   | Static Web App (PWA)      | via API       | AWS S3         |
 
 ---
 
@@ -56,6 +65,6 @@ A standalone Progressive Web App built with Blazor WebAssembly.
 ```text
 /solution-root
 │
-├── GalleryShop               # Blazor Server App
-├── GalleryShop.Api           # ASP.NET Core Web API
-└── GalleryShop.Blazor-wasm   # Blazor WebAssembly PWA
+├── GalleryShop             # Blazor Server App
+├── GalleryShop.Api         # ASP.NET Core Web API
+└── GalleryShop.Wasm        # Blazor WebAssembly PWA
