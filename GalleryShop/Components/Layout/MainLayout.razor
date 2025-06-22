@@ -1,0 +1,33 @@
+﻿@inherits LayoutComponentBase
+
+<div class="page">
+
+    <main>
+        <div class="top-row px-4">
+             <a href="/">
+            <img src="logo.png" />
+            </a> 
+            <div style="position: absolute; top20px; right:20px;">
+            <a href="/cart" title="Shopping Cart" style="display:inline-block;vertical-align:middle;">
+               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="grey" viewBox="0 0 24 24">
+  <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm0 2.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM17 18c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm0 2.5a.5.5 0 1 1 0-1 .5.5 0 0 1 0 1zM7.16 13l-.94-2h11.55c.75 0 1.41-.41 1.75-1.03l3.58-6.49A.998.998 0 0 0 22.17 2H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.45C4.52 12.37 5.48 14 7 14h12v-2H7.42c-.14 0-.25-.11-.26-.25z"/>
+</svg>
+            </a>
+            </div>
+        </div>
+
+         <div class="top-rowa">
+             <a href="/">SHOP</a>
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>

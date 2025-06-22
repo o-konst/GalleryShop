@@ -1,0 +1,15 @@
+﻿@using GalleryShop.Models
+@implements IDialogContentComponent<Album>
+
+<FluentTextField @bind-Value="@Content.Title">Title:</FluentTextField>
+<AlbumImageUpload Album="Content"  />
+
+
+@code {
+    [Parameter]
+    public Album Content { get; set; } = default!;
+
+    [CascadingParameter]
+    public FluentDialog? Dialog { get; set; }
+
+}

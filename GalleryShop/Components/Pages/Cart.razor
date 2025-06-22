@@ -1,0 +1,38 @@
+﻿@page "/cart"
+
+@using GalleryShop.Models
+@using GalleryShop.Services
+
+@inject IAlbumsService AlbumService
+
+<PageTitle>Cart</PageTitle>
+
+<h1>Users</h1>
+
+<p>This component demonstrates fetching data from an external API.</p>
+@if (album == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    @album.Title
+    <img src="@album.ImageUrl" alt="@album.Title" style="width: 100px; height: auto;" />
+
+    <div style="margin-top: 1rem;">
+        <a href="/" class="btn btn-primary me-2">Continue Shopping</a>
+        <a href="/checkout" class="btn btn-primary">Checkout</a>
+    </div>
+}
+
+@code {
+
+    public int id { get; set; }  = 1;
+
+    private Album? album;
+
+    protected override async Task OnInitializedAsync()
+    {
+        album = await AlbumService.GetAlbum(id);
+    }
+}

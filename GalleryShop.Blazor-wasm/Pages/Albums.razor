@@ -1,0 +1,107 @@
+@page "/albums"
+
+@using GalleryShop.Blazor_wasm.Pages.Components
+@using GalleryShop.Models
+
+@inject IAlbumService AlbumService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+
+<PageTitle>Albums</PageTitle>
+<div style="display:flex;justify-content: space-between;">
+<h3>Albums</h3>
+
+    <FluentButton @onclick="@OpenDialogAsync" Appearance="Appearance.Accent">
+       Add Album
+    </FluentButton>
+</div>
+
+
+@if (albums == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!albums.Any())
+{
+    <p>No albums found.</p>
+}
+else
+{
+    <FluentPaginator State="@pagination" SummaryTemplate="@template" />
+
+    <FluentDataGrid Items="@albums" Pagination="@pagination" RowSize="@DataGridRowSize.Large"
+   >
+             <TemplateColumn Title="Album Photo" >
+             <img src="@context.ImageUrl" style="height:100%" />
+              </TemplateColumn>
+        <PropertyColumn Property="@(p => p.Title)" />
+
+         <TemplateColumn Title="Actions" Align="@Align.End">
+            <FluentButton aria-label="Edit item" IconEnd="@(new Icons.Regular.Size16.Edit())" OnClick="@(() => OnAlbumRowClick(context.Id))" />
+        </TemplateColumn> 
+    </FluentDataGrid>
+
+    <FluentPaginator State="@pagination" />
+}
+
+@code {
+    PaginationState pagination = new PaginationState() { ItemsPerPage = 20 };
+
+    private IQueryable<GalleryShop.Models.Album>? albums;
+    private bool addAlbumDialogOpen = false;
+    private Album newAlbum = new Album();
+
+    /// <summary>
+    /// Called by the Blazor framework when the component is initialized.
+    /// Loads the list of albums for display.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAlbums();
+    }
+
+    /// <summary>
+    /// Loads all albums from the album service and updates the paginator.
+    /// </summary>
+    private async Task LoadAlbums()
+    {
+        var result = await AlbumService.GetAllAsync();
+        albums = result!.AsQueryable();
+        await pagination.SetTotalItemCountAsync(result!.Count);
+    }
+
+    private RenderFragment template = @<span />;
+
+    /// <summary>
+    /// Navigates to the details page for the selected album.
+    /// </summary>
+    /// <param name="id">The unique identifier of the album to view.</param>
+    private void OnAlbumRowClick(int id)
+    {
+        Navigation.NavigateTo($"/album/{id}");
+    }
+
+    /// <summary>
+    /// Opens the dialog for creating a new album and refreshes the album list after creation.
+    /// </summary>
+    private async Task OpenDialogAsync()
+    {
+        DialogParameters parameters = new()
+            {
+                Title = "Create album",
+                PrimaryAction = "Save",
+                SecondaryAction = "Cancel",
+                Width = "500px",
+                Modal = true,
+                PreventScroll = true
+            };
+
+        IDialogReference dialog = await DialogService.ShowDialogAsync<SimpleDialog>(new GalleryShop.Models.Album(), parameters);
+        DialogResult? result = await dialog.Result;
+        if (result != null && result.Data != null) { }
+            var album = result!.Data as GalleryShop.Models.Album;
+            await AlbumService.CreateAlbum(album!);
+            await LoadAlbums();
+            StateHasChanged();
+        }
+}

@@ -1,0 +1,132 @@
+@page "/album/{id:int}"
+@using GalleryShop.Blazor_wasm.Pages.Components
+@using GalleryShop.Models
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IAlbumService AlbumService
+@inject IPhotoService PhotoService
+
+
+<style>
+.my-grid .fluent-grid-row {
+  height: 100px !important;
+}
+</style>
+
+<PageTitle>Album Details</PageTitle>
+
+@if (loading)
+{
+    <p><em>Loading...</em></p>
+}
+else if (error != null)
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+else
+{
+    <h3>Album: @album!.Title</h3>
+
+    <PhotoUpload Album="album" OnComplete="ReloadAlbumAsync" />
+   
+    <FluentDataGrid Items="@photosQ"  Class="my-grid" RowSize="@DataGridRowSize.Large" >
+
+        <TemplateColumn Title="Photo" >
+             <img src="@context.Url" style="height:100%" />
+          </TemplateColumn>
+
+    <TemplateColumn Title="Title">
+        <FluentTextField @bind-Value="context.Title" 
+  />
+    </TemplateColumn>
+    
+    <TemplateColumn Title="Price">
+
+ <FluentNumberField @bind-Value="@context.Price" TValue="decimal"  />
+
+    </TemplateColumn>
+      <TemplateColumn Title="Actions" Align="@Align.End">
+            <FluentButton aria-label="Save item" IconEnd="@(new Icons.Regular.Size16.Save())" OnClick="@(() => OnSaveRowClick(context))" />
+                <FluentButton aria-label="Delete item" IconEnd="@(new Icons.Regular.Size16.Delete())" OnClick="@(() => OnDeleteRowClick(context))" />
+        </TemplateColumn>
+
+    </FluentDataGrid>
+
+}
+
+            
+@code {
+    [Parameter]
+    public int id { get; set; }
+
+    private GalleryShop.Models.Album? album;
+
+    private List<Photo>? photos;
+    private bool loading = true;
+    private string? error;
+
+    private IQueryable<Photo>? photosQ;
+
+    /// <summary>
+    /// Called by the Blazor framework when the component is initialized.
+    /// Loads the album and its photos for the specified album id.
+    /// </summary>
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadAlbumAsync();
+    }
+
+    /// <summary>
+    /// Reloads the album and its photos from the data source.
+    /// Updates the UI state accordingly.
+    /// </summary>
+    private async Task ReloadAlbumAsync()
+    {
+        try
+        {
+            album = await AlbumService.GetAlbum(id);
+            photos = album!.Photos;
+            photosQ = album!.Photos.AsQueryable();
+        }
+        catch (Exception ex)
+        {
+            error = ex.Message;
+        }
+        loading = false;
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private int? editingPersonId = null;
+    private string editingName = string.Empty;
+
+    /// <summary>
+    /// Starts editing the title of the specified photo.
+    /// </summary>
+    /// <param name="photo">The photo to edit.</param>
+    private void StartEdit(Photo photo)
+    {
+        editingPersonId = photo.Id;
+        editingName = photo.Title;
+    }
+
+    /// <summary>
+    /// Saves changes to a photo's details by calling the photo service.
+    /// </summary>
+    /// <param name="photo">The photo to save.</param>
+    private async Task OnSaveRowClick(Photo photo)
+    {
+         await PhotoService.UpdatePhoto(photo);
+         await InvokeAsync(StateHasChanged);
+    }
+
+    /// <summary>
+    /// Deletes a photo and reloads the album data.
+    /// </summary>
+    /// <param name="photo">The photo to delete.</param>
+    private async Task OnDeleteRowClick(Photo photo)
+    {
+         await PhotoService.DeletePhoto(photo);
+         await ReloadAlbumAsync();
+    }
+}

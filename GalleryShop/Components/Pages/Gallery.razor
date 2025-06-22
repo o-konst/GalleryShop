@@ -1,0 +1,54 @@
+﻿@page "/gallery/{id:int}"
+
+@using GalleryShop.Models
+@using GalleryShop.Services
+
+@inject IAlbumsService AlbumService
+
+<PageTitle>Users</PageTitle>
+
+
+<h1>Users</h1>
+
+<p>This component demonstrates fetching data from an external API.</p>
+@if (album == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+
+    @album.Title
+    <img src="@album.ImageUrl" alt="@album.Title" style="width: 100px; height: auto;" />
+  @*   <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Title</th>
+                         <th>Image</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in album)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.Title</td>
+                          <td><img src="@user.ImageUrl" /></td>
+                    </tr>
+                }
+            </tbody>
+        </table> *@
+}
+
+@code {
+
+        [Parameter]  
+    public int id { get; set; }  
+
+    private Album? album;
+
+    protected override async Task OnInitializedAsync()
+    {
+        album = await AlbumService.GetAlbum(id);
+    }
+}

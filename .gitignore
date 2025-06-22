@@ -1,0 +1,46 @@
+# Author: Konstantin Ogai
+# Date: 2025-06-22
+
+# .NET build artifacts
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code settings
+.vscode/
+
+.vs/
+
+# Rider settings
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# ASP.NET/Entity Framework
+appsettings.Development.json
+appsettings.Local.json
+appsettings.*.local.json
+
+# AWS Lambda deployment files
+aws-lambda-tools-defaults.json
+
+# Docker artifacts
+**/Dockerfile.*
+**/docker-compose*
+
+# Node modules (if using npm/yarn for Blazor WASM)
+node_modules/
+
+# Publish directory
+publish/

@@ -1,0 +1,72 @@
+﻿@using System.Text.Json
+@inject HttpClient Http
+@inject IConfiguration Configuration
+
+<FluentButton Id="MyUploadButton" Appearance="Appearance.Accent">
+   Upload Album photo
+</FluentButton>
+
+<FluentInputFile @ref="@myFileUploader" 
+                 DragDropZoneVisible="false"
+                 Mode="InputFileMode.SaveToTemporaryFolder"
+                 Multiple="false"
+                 AnchorId="MyUploadButton"
+                 MaximumFileSize="@(100 * 1024 * 1024)"
+                 Accept="image/*"
+                 OnProgressChange="@(e =>
+                     {
+                         progressPercent = e.ProgressPercent; 
+                         progressTitle = e.ProgressTitle;
+                     })"
+                 OnCompleted="@OnCompleted" />
+
+<FluentProgress Min="0" Max="100" Visible="@(progressPercent > 0)" Value="@progressPercent" />
+<FluentLabel Alignment="HorizontalAlignment.Center">
+    @progressTitle
+</FluentLabel>
+
+
+@code
+{
+    [Parameter]
+    public GalleryShop.Models.Album Album { get; set; }
+
+    FluentInputFile? myFileUploader = default!;
+    int? progressPercent;
+    string? progressTitle;
+
+    FluentInputFileEventArgs[] Files = Array.Empty<FluentInputFileEventArgs>();
+
+    async void OnCompleted(IEnumerable<FluentInputFileEventArgs> files)
+    {
+        Files = files.ToArray();
+        progressPercent = myFileUploader!.ProgressPercent;
+        progressTitle = myFileUploader!.ProgressTitle;
+        
+        var apiBase = Configuration["ApiBaseAddress"];
+
+        foreach (var file in Files)
+        {
+            if (file.LocalFile is not null)
+            {
+                using var stream = file.LocalFile.OpenRead();
+                var content = new StreamContent(stream);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                var form = new MultipartFormDataContent();
+                form.Add(content, "file", file.Name);
+
+                var response = await Http.PostAsync( $"{apiBase}album/0/photo", form);
+                if (response.IsSuccessStatusCode)
+                {
+                   var result = await response.Content.ReadFromJsonAsync<JsonElement>();
+                    if (result.TryGetProperty("url", out var urlProp) && urlProp.ValueKind == JsonValueKind.String)
+                    {
+                        Album.ImageUrl = urlProp.GetString();
+                    }
+                }
+            }
+            file.LocalFile?.Delete();
+        }
+    }
+}

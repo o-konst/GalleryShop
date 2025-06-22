@@ -1,0 +1,18 @@
+{
+  "Information": [
+    "This file is used to configure AWS Lambda deployment for the GalleryShop.Api project.",
+    "For documentation, see: https://github.com/aws/aws-extensions-for-dotnet-cli"
+  ],
+  "profile": "default",
+  "region": "ap-shoutheast-2",
+  "configuration": "Release",
+  "framework": "net9.0",
+  "function-runtime": "dotnet8",
+  "function-memory-size": 1024,
+  "function-timeout": 30,
+  "function-handler": "GalleryShop.Api::GalleryShop.Api.LambdaEntryPoint::FunctionHandlerAsync",
+  "function-name": "GalleryShopApi",
+  "function-description": "GalleryShop ASP.NET Core Web API Lambda",
+  "function-url-enalbe": true,
+  "package-type": "Zip"
+}

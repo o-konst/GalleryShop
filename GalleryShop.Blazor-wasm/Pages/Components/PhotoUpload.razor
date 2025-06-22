@@ -1,0 +1,82 @@
+﻿@inject HttpClient Http
+@inject IConfiguration Configuration
+
+<FluentInputFile @ref="@myFileUploader" 
+                 Id="my-file-uploader"
+                 Mode="InputFileMode.SaveToTemporaryFolder"
+                 Multiple="true"
+                 MaximumFileCount="100"
+                 MaximumFileSize="@(10*1024*1024)"
+                 Accept="image/*"
+
+                 OnCompleted="@OnCompletedAsync"
+                  OnProgressChange="@(e =>
+                     {
+                         progressPercent = e.ProgressPercent; 
+                         progressTitle = e.ProgressTitle;
+                     })"
+                 Style="height: 150px;">
+    <ChildContent>
+        <label for="my-file-uploader">
+            <FluentIcon Value="@(new @Icons.Regular.Size24.ArrowUpload())" />
+        </label>
+
+        <div>
+            Drag files here you wish to upload
+        </div>
+
+    </ChildContent>
+</FluentInputFile>
+
+
+<FluentProgress Min="0" Max="100" Visible="@(progressPercent > 0)" Value="@progressPercent" />
+<FluentLabel Alignment="HorizontalAlignment.Center">
+    @progressTitle
+</FluentLabel>
+
+
+@code
+{
+    [Parameter]
+    public GalleryShop.Models.Album Album { get; set; }
+
+       [Parameter]
+    public EventCallback OnComplete { get; set; }
+
+       FluentInputFile? myFileUploader = default!;
+    int ProgressPercent = 0;
+    int? progressPercent;
+    string? progressTitle;
+
+    FluentInputFileEventArgs[] Files = Array.Empty<FluentInputFileEventArgs>();
+
+    private async Task OnCompletedAsync(IEnumerable<FluentInputFileEventArgs> files)
+    {
+         Files = files.ToArray();
+        progressPercent = myFileUploader!.ProgressPercent;
+        progressTitle = myFileUploader!.ProgressTitle;
+         var apiBase = Configuration["ApiBaseAddress"];
+
+        foreach (var file in Files)
+        {
+            if (file.LocalFile is not null)
+            {
+                using var stream = file.LocalFile.OpenRead();
+                var content = new StreamContent(stream);
+                content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+
+                var form = new MultipartFormDataContent();
+                form.Add(content, "file", file.Name);
+
+                var response = await Http.PostAsync($"{apiBase}album/{Album.Id}/photo", form);
+                if (!response.IsSuccessStatusCode)
+                {
+                    // file.ErrorMessage = $"Upload failed: {response.ReasonPhrase}";
+                }
+            }
+            file.LocalFile?.Delete();
+        }
+
+         await OnComplete.InvokeAsync();
+    }
+}
