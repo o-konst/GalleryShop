@@ -1,7 +1,7 @@
 using Amazon.S3;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
+//builder.Services.AddAWSLambdaHosting(LambdaEventSource.HttpApi);
 // Add services to the container.
 
 builder.Services.AddControllers();

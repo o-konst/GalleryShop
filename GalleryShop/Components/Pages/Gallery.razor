@@ -4,51 +4,97 @@
 @using GalleryShop.Services
 
 @inject IAlbumsService AlbumService
+@inject IProductsService ProductsService
 
-<PageTitle>Users</PageTitle>
+<PageTitle>Gallery</PageTitle>
 
-
-<h1>Users</h1>
-
-<p>This component demonstrates fetching data from an external API.</p>
-@if (album == null)
+@if (loading)
 {
     <p><em>Loading...</em></p>
 }
-else{
-
-    @album.Title
-    <img src="@album.ImageUrl" alt="@album.Title" style="width: 100px; height: auto;" />
-  @*   <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Title</th>
-                         <th>Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in album)
-                {
-                    <tr>
-                        <td>@user.Id</td>
-                        <td>@user.Title</td>
-                          <td><img src="@user.ImageUrl" /></td>
-                    </tr>
-                }
-            </tbody>
-        </table> *@
+else
+{
+    <a href="/" class="back-link">← Back</a>
+    <h1 class="centered-gray">@album.Title</h1>
+    <div class="gallery-layout">
+        <!-- Left Column: Gallery -->
+        <div class="gallery-left">
+            <div class="selected-photo">
+                <img src="@photo.Url" alt="@photo.Title" />
+            </div>
+            <div class="photo-thumbnails-scroll">
+                <div class="photo-thumbnails">
+                    @foreach (var p in album.Photos)
+                    {
+                        <img src="@p.Url"
+                             alt="@p.Title"
+                             class="thumbnail @(p.Id == photo.Id ? "selected" : "")"
+                             @onclick="() => SelectPhoto(p)" />
+                    }
+                </div>
+            </div>
+        </div>
+        <!-- Right Column: Details -->
+        <div class="gallery-right">
+            <div class="photo-title">@photo.Title</div>
+            <div class="photo-price">$@price NZD</div> 
+            <div class="photo-options">
+                <label for="productOption">Product:</label>
+                <select id="productOption" Value="selectedProductId" @onchange="OnProductChanged">
+                    @foreach (var product in products)
+                    {
+                        <option value="@product.Id">@product.Title</option>
+                    }
+                </select>
+            </div>
+            <button class="add-to-cart-btn" @onclick="AddToCart">Add to Cart</button>
+        </div>
+    </div>
 }
 
 @code {
-
-        [Parameter]  
-    public int id { get; set; }  
+    [Parameter]
+    public int id { get; set; }
 
     private Album? album;
+    private Photo? photo;
+    private List<Product> products = new();
+    private decimal price = 0.0m;
+
+    private int selectedProductId = 1;
+    private bool loading = true;
 
     protected override async Task OnInitializedAsync()
     {
+        products = await ProductsService.GetProducts();
         album = await AlbumService.GetAlbum(id);
+        photo = album?.Photos[0];
+        setPrice();
+        loading = false;
+    }
+
+    private void SelectPhoto(Photo p)
+    {
+        photo = p;
+        setPrice();
+    }
+
+    private void setPrice()
+    {
+        price = (photo?.Price ?? 0m) +(products.FirstOrDefault(p => p.Id == selectedProductId)?.Price ?? 0.0m);
+    }
+
+     private void OnProductChanged(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out var id))
+        {
+            selectedProductId = id;
+            setPrice();
+        }
+    }
+
+    private void AddToCart()
+    {
+        // Add to cart logic here
     }
 }

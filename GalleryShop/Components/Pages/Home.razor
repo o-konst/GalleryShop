@@ -1,47 +1,41 @@
 ﻿@page "/"
 
-
 @using GalleryShop.Models
 @using GalleryShop.Services
 
 @inject IAlbumsService AlbumService
+@inject NavigationManager Navigation
 
-<PageTitle>Users</PageTitle>
+<PageTitle>Galleries</PageTitle>
 
-<h1>Users</h1>
+<h1 class="centered-gray">Galleries</h1>
 
-<p>This component demonstrates fetching data from an external API.</p>
-@if (users == null)
+@if (albums == null)
 {
     <p><em>Loading...</em></p>
 }
 else{
-    <table class="table">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Title</th>
-                         <th>Image</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in users)
-                {
-                    <tr>
-                        <td>@user.Id</td>
-                        <td>@user.Title</td>
-                          <td><img src="@user.ImageUrl" /></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="album-grid">
+        @foreach (var album in albums)
+        {
+            <div class="album-card" @onclick="() => NavigateToAlbum(album.Id)" style="cursor:pointer;">
+                <div><img src="@album.ImageUrl" class="album-image" /></div>
+                <div>@album.Title</div>
+            </div>
+        }
+    </div>
 }
 
 @code {
-    private IEnumerable<Album>? users;
+    private IEnumerable<Album>? albums;
 
     protected override async Task OnInitializedAsync()
     {
-        users = await AlbumService.GetAlbums();
+        albums = await AlbumService.GetAlbums();
+    }
+
+    private void NavigateToAlbum(int albumId)
+    {
+        Navigation.NavigateTo($"/gallery/{albumId}");
     }
 }
