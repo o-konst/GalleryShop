@@ -1,6 +1,6 @@
-# GalleryShop Solution
+# GalleryShop Playground Solution
 
-This solution contains **three** separate projects, each serving a specific role in the system architecture. It is built with **.NET 9**, uses **PostgreSQL** for data storage, and **AWS S3** for image hosting.
+This solution contains **three ** separate projects, each serving a specific role in the system architecture. It is built with **.NET 9**, uses **PostgreSQL** for data storage, and **AWS S3** for image hosting.
 
 ---
 
