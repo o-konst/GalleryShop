@@ -24,5 +24,6 @@ stages:
       inputs:
         command: build
         dockerfile: '$(Build.SourcesDirectory)/GalleryShop.Api/Dockerfile'
+        buildContext: '$(Build.SourcesDirectory)' 
         tags: |
           $(tag)
