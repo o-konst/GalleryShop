@@ -11,7 +11,6 @@ A full-featured Blazor Server application deployed as a Docker container on AWS 
 - 🧠 Built with **.NET 9**
 - 🗄 Uses **PostgreSQL** for structured data
 - ☁️ Uploads and retrieves all images from **AWS S3**
-- 🔗 **Demo:** [https://new.coachlink.co.nz](https://new.coachlink.co.nz)
 
 ### 📸 Screenshots
 
